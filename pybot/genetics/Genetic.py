@@ -11,7 +11,7 @@ class Genetic:
     """
 
     DEFAULT_HYPER_PARAMETERS = {
-        "crossover_point": 0.2,  # The point where the croossover between two algo is made
+        "crossover_point": 0.2,  # The point where the crossover between two algo is made
         "mutation_prob": 0.1,  # The probability of mutation of one parameter
         "mutation_variance": 0.4,  # The variance used in the normal distribution for the mutation
         "mutation_mean": 0.5,  # The mean used in the normal distribution for the mutation
