@@ -1,6 +1,6 @@
 import pytest
-from pybot.genetics.BaseAlgorithm import BaseAlgorithm
-from pybot.genetics.Genetic import Genetic
+from pybot.genetics import BaseAlgorithm
+from pybot.genetics import Genetic
 
 
 class DummyAlgo(BaseAlgorithm):
