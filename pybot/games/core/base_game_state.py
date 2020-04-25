@@ -27,11 +27,6 @@ class BaseGameState(ABC):
         return self._origin_move
 
     @property
-    def previous_state(self):
-        """Return the previous state of this current one."""
-        return self._origin_state
-
-    @property
     def player(self):
         """Return the player that should play the next move."""
         return self._player
@@ -43,3 +38,11 @@ class BaseGameState(ABC):
     @abstractmethod
     def __hash__(self):
         pass
+
+
+def mat_to_tuple(mat):
+    return tuple(tuple(line) for line in mat)
+
+
+def mat_to_list(mat):
+    return list(list(line) for line in mat)
