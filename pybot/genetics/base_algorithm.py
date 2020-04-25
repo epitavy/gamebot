@@ -32,6 +32,12 @@ class BaseAlgorithm(ABC):
         """
         pass
 
+    @property
+    @abstractmethod
+    def evaluator(self):
+        """Return an instance spiecific evaluator."""
+        pass
+
     @parameters.setter
     @abstractmethod
     def parameters(self, parameters):

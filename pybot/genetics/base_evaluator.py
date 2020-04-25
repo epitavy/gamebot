@@ -42,6 +42,7 @@ class BaseGameEvaluator(BaseEvaluator):
 
     @abstractmethod
     def reset(self):
+        """After a reset, scoring should return 0."""
         pass
 
     @property
@@ -53,7 +54,7 @@ class BaseGameEvaluator(BaseEvaluator):
     @property
     @abstractmethod
     def state(self):
-        """Return the current state of the game."""
+        """Return the current state of the game. It may be normalized for the algorithm input."""
         pass
 
     @abstractmethod
@@ -69,9 +70,4 @@ class BaseGameEvaluator(BaseEvaluator):
     @abstractmethod
     def scoring(self):
         """Get the score for the algorithm player."""
-        pass
-
-    @abstractmethod
-    def generatePossibleMoves(self):
-        """Return all the possible moves from the current state in an array-like form."""
         pass

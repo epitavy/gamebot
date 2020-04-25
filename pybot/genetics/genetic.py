@@ -15,6 +15,7 @@ class Genetic:
         "mutation_prob": 0.1,  # The probability of mutation of one parameter
         "mutation_variance": 0.4,  # The variance used in the normal distribution for the mutation
         "mutation_mean": 0.5,  # The mean used in the normal distribution for the mutation
+        "log": None,            # If None, doesn't log, otherwise log to the given file
     }
 
     def __init__(self, Algorithm, *init_parameters, **hyper_parameters):
@@ -32,7 +33,7 @@ class Genetic:
         """Initialize the population of algorithm to be trained."""
         self.size = size
         self.population = [
-            self.Algorithm(self.default_algo_params) for _ in range(size)
+            self.Algorithm(params=self.default_algo_params) for _ in range(size)
         ]
 
     def train(self, n):
@@ -40,6 +41,8 @@ class Genetic:
         for i in range(n):
             self._evaluate()
             self._sort()
+            if self.hyper_parameters['log'] is not None:
+                Genetic.log(self.hyper_parameters['log'], self.population, i)
             self._evolve()
 
     def bests(self, n):
@@ -70,23 +73,28 @@ class Genetic:
         are choosen to be crossed and mutated according to some parameters.
         """
         new_generation = []
+
+        # This calculation is done here because of the big overhead if done in _select_algorithm
+        indexes = np.arange(self.size)
+        if self.population_score == 0:
+            return self.population[0]
+        probabilities = []
+        for algo in self.population:
+            probabilities.append(algo.score / self.population_score)
+
         for _ in range(self.size):
-            parent1 = self._select_algorithm()
-            parent2 = self._select_algorithm()
+            parent1 = self._select_algorithm(indexes, probabilities)
+            parent2 = self._select_algorithm(indexes, probabilities)
             evolved = self._cross_mutate(parent1, parent2)
             new_generation.append(evolved)
 
         self.population = new_generation
 
-    def _select_algorithm(self):
+    def _select_algorithm(self, indexes, probabilities):
         """Return an algorithm of the population.
 
         The score of each algorithm can be see as a probability to be selected.
         """
-        indexes = np.arange(self.size)
-        probabilities = []
-        for algo in self.population:
-            probabilities.append(algo.score / self.population_score)
 
         choosen = np.random.choice(indexes, p=probabilities)
         return self.population[choosen]
@@ -125,3 +133,22 @@ class Genetic:
                 parameters[param_i] /= 2
 
         algo.parameters = parameters  # Uses the setter defined in the class Algorithm
+
+    @staticmethod
+    def log(path, population, generation):
+        mode = "a"
+        if generation == 0:
+            mode = "w"
+
+        content = ' '.join((str(algo.score) for algo in population))
+        with open(path + '-scores.log.raw', mode) as file:
+            file.write(f'{generation} {content}\n')
+
+        with open(path + '-params.log.raw', mode) as file:
+            file.write(f'{generation}\n')
+            for algo in population:
+                params = ' '.join((str(p) for p in algo.parameters))
+                file.write(f'{params}\n')
+
+
+
