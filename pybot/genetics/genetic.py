@@ -15,7 +15,7 @@ class Genetic:
         "mutation_prob": 0.1,  # The probability of mutation of one parameter
         "mutation_variance": 0.4,  # The variance used in the normal distribution for the mutation
         "mutation_mean": 0.5,  # The mean used in the normal distribution for the mutation
-        "log": None,            # If None, doesn't log, otherwise log to the given file
+        "log": None,  # If None, doesn't log, otherwise log to the given file
     }
 
     def __init__(self, Algorithm, *init_parameters, **hyper_parameters):
@@ -41,8 +41,8 @@ class Genetic:
         for i in range(n):
             self._evaluate()
             self._sort()
-            if self.hyper_parameters['log'] is not None:
-                Genetic.log(self.hyper_parameters['log'], self.population, i)
+            if self.hyper_parameters["log"] is not None:
+                Genetic.log(self.hyper_parameters["log"], self.population, i)
             self._evolve()
 
     def bests(self, n):
@@ -140,15 +140,12 @@ class Genetic:
         if generation == 0:
             mode = "w"
 
-        content = ' '.join((str(algo.score) for algo in population))
-        with open(path + '-scores.log.raw', mode) as file:
-            file.write(f'{generation} {content}\n')
+        content = " ".join((str(algo.score) for algo in population))
+        with open(path + "-scores.log.raw", mode) as file:
+            file.write(f"{generation} {content}\n")
 
-        with open(path + '-params.log.raw', mode) as file:
-            file.write(f'{generation}\n')
+        with open(path + "-params.log.raw", mode) as file:
+            file.write(f"{generation}\n")
             for algo in population:
-                params = ' '.join((str(p) for p in algo.parameters))
-                file.write(f'{params}\n')
-
-
-
+                params = " ".join((str(p) for p in algo.parameters))
+                file.write(f"{params}\n")

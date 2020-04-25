@@ -12,6 +12,7 @@ def dummy_genetics():
 
     return gen
 
+
 class DummyEvaluator(BaseGameEvaluator):
     """Dummy class for testing.
 
@@ -44,6 +45,7 @@ class DummyEvaluator(BaseGameEvaluator):
         score = self.point_count // self.turn_count
         return score if score > 0 else 0
 
+
 class DummyMaximazerAlgo(BaseAlgorithm):
     """Dummy class for testing.
 
@@ -64,7 +66,7 @@ class DummyMaximazerAlgo(BaseAlgorithm):
         return sum(self._params)
 
     def evaluate(self):
-        self._score =  self.evaluator.evaluate(self)
+        self._score = self.evaluator.evaluate(self)
 
     @property
     def score(self):
@@ -94,6 +96,7 @@ class DummyMaximazerAlgo(BaseAlgorithm):
     @classmethod
     def parameter_count(cls):
         return 5
+
 
 class DummyAlgo(BaseAlgorithm):
     """Dummy class for testing.
@@ -125,7 +128,7 @@ class DummyAlgo(BaseAlgorithm):
 
     @property
     def evaluator(self):
-        return lambda x : (10 + x.p) / 20
+        return lambda x: (10 + x.p) / 20
 
     @classmethod
     def parameter_count(cls):

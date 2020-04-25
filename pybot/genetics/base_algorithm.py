@@ -32,12 +32,6 @@ class BaseAlgorithm(ABC):
         """
         pass
 
-    @property
-    @abstractmethod
-    def evaluator(self):
-        """Return an instance spiecific evaluator."""
-        pass
-
     @parameters.setter
     @abstractmethod
     def parameters(self, parameters):
@@ -46,6 +40,12 @@ class BaseAlgorithm(ABC):
         The data should be transformed to fit the internal algorithm representation.
         The parameters value has the same form that the one returned by the parameter getter.
         """
+        pass
+
+    @property
+    @abstractmethod
+    def evaluator(self):
+        """Return an instance specific evaluator."""
         pass
 
     @classmethod
