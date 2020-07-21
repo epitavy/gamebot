@@ -26,7 +26,7 @@ class BaseAlgorithm(ABC):
     @property
     @abstractmethod
     def parameters(self):
-        """Return the algorithm parameters in an array-like form.
+        """Return the parameters of the algorithm in an array-like shape.
 
         The value of the parameters should be normalized to lie between 0 and 1.
         """
@@ -35,10 +35,10 @@ class BaseAlgorithm(ABC):
     @parameters.setter
     @abstractmethod
     def parameters(self, parameters):
-        """Set the algorithm parameter.
+        """Set the algorithm parameters.
 
-        The data should be transformed to fit the internal algorithm representation.
-        The parameters value has the same form that the one returned by the parameter getter.
+        The data should be unormalized to fit the internal algorithm representation.
+        The given parameters are normalized as returned by the getter.
         """
         pass
 

@@ -48,7 +48,7 @@ class BaseGameEvaluator(BaseEvaluator):
     @property
     @abstractmethod
     def is_over(self):
-        """Return a boolean to indicate wheter or not the evaluation is over."""
+        """Return a boolean to indicate wether or not the evaluation is over."""
         pass
 
     @property

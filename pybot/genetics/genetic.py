@@ -1,3 +1,4 @@
+from .base_algorithm import BaseAlgorithm
 import numpy as np
 import copy
 
@@ -21,11 +22,13 @@ class Genetic:
     def __init__(self, Algorithm, *init_parameters, **hyper_parameters):
         """Initilize a Genetic object with the given Algorithm class.
 
-        The provided algorithm class should have an API that follow
-        the one of BaseAlgorithm.
+        The provided algorithm class should inherit from BaseAlgorithm.
         """
+        if not issubclass(Algorithm, BaseAlgorithm):
+            raise Exception("The provided algorithm class should inherit from BaseAlgorithm.")
+
         self.Algorithm = Algorithm
-        self.default_algo_params = init_parameters if init_parameters else None
+        self.default_algo_params = init_parameters if init_parameters else [0, 0, 0, 0, 0]
         self.hyper_parameters = self.DEFAULT_HYPER_PARAMETERS.copy()
         self.hyper_parameters.update(hyper_parameters)
 
@@ -39,6 +42,7 @@ class Genetic:
     def train(self, n):
         """Train the population over n generations."""
         for i in range(n):
+            print(f"\r.....Training generation {i+1}/{n}", end="\t")
             self._evaluate()
             self._sort()
             if self.hyper_parameters["log"] is not None:
@@ -46,7 +50,7 @@ class Genetic:
             self._evolve()
 
     def bests(self, n):
-        """Return the n best algorithm."""
+        """Return the n best algorithms."""
         self._sort()
         return self.population[:n]
 
@@ -77,10 +81,11 @@ class Genetic:
         # This calculation is done here because of the big overhead if done in _select_algorithm
         indexes = np.arange(self.size)
         if self.population_score == 0:
-            return self.population[0]
-        probabilities = []
-        for algo in self.population:
-            probabilities.append(algo.score / self.population_score)
+            probabilities = np.full(self.size, 1 / self.size) # Every algo has the same proba
+        else:
+            probabilities = []
+            for algo in self.population:
+                probabilities.append(algo.score / self.population_score)
 
         for _ in range(self.size):
             parent1 = self._select_algorithm(indexes, probabilities)
@@ -145,7 +150,8 @@ class Genetic:
             file.write(f"{generation} {content}\n")
 
         with open(path + "-params.log.raw", mode) as file:
-            file.write(f"{generation}\n")
+            if generation == 0:
+                file.write(f"{len(population)}\n")
             for algo in population:
                 params = " ".join((str(p) for p in algo.parameters))
                 file.write(f"{params}\n")

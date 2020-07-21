@@ -5,17 +5,17 @@
 # 
 # ***
 
-# In[1]:
+# In[2]:
 
 
-get_ipython().run_line_magic('matplotlib', 'inline')
 import matplotlib.pyplot as plt
 import numpy as np
+get_ipython().run_line_magic('matplotlib', 'inline')
 
 
 # ### Plotting functions
 
-# In[2]:
+# In[3]:
 
 
 def plot_metric_by_generation(*data, metric='Score'):
@@ -28,7 +28,7 @@ def plot_metric_by_generation(*data, metric='Score'):
     ax.legend()
 
 
-# In[3]:
+# In[4]:
 
 
 def plot_distribution(*data):
@@ -46,7 +46,7 @@ def plot_distribution(*data):
 
 # ### Functions to cleanup data from log files
 
-# In[4]:
+# In[5]:
 
 
 def clean_raw_scores(raw_data):
@@ -59,23 +59,27 @@ def clean_raw_scores(raw_data):
     return data
 
 
-# In[5]:
+# In[33]:
 
 
 def clean_raw_params(raw_params):
     data = []
     
-    all_params = []
-    for line in raw_params:
-        line = line.split(' ')
-        if len(line) == 1:     # Generation number alone on the line
-            data.append(all_params)
-            all_params = []
-            continue
+    head = raw_params[0].split(' ')
+    try:
+        pop_size = int(head[0])
+    except Exception:
+        raise Exception("File has bad format, the first line should be the population size")
         
-        line = list(map(lambda x : float(x), line))
+    all_params = []
+    for i, line in enumerate(raw_params[1:]):
+        if i % pop_size == 0:
+            data.append(all_params) # A whole generation
+            all_params = []
+        line = list(map(lambda x : float(x), line.split(' ')))
         all_params.append(line)
-    
+            
+        
     return data[1:]
 
 
@@ -83,7 +87,7 @@ def clean_raw_params(raw_params):
 
 # #### For scores
 
-# In[6]:
+# In[7]:
 
 
 def scores_to_avg_by_gen(data):
@@ -93,7 +97,7 @@ def scores_to_avg_by_gen(data):
     return ('avg', avg_by_gen)
 
 
-# In[7]:
+# In[8]:
 
 
 def scores_to_best_by_gen(data):
@@ -105,7 +109,7 @@ def scores_to_best_by_gen(data):
 
 # #### For algo parameters
 
-# In[8]:
+# In[9]:
 
 
 def build_histogram(ticks, values):
@@ -125,7 +129,7 @@ def build_histogram(ticks, values):
     return (ticks[:-1], histogram)
 
 
-# In[9]:
+# In[10]:
 
 
 from numpy import arange
@@ -147,7 +151,7 @@ def params_to_distrib_over_pop(params, gen=0, param_index=0):
     
 
 
-# In[10]:
+# In[11]:
 
 
 def params_to_avg_by_gen(params, param_index=0):
@@ -168,10 +172,10 @@ def params_to_avg_by_gen(params, param_index=0):
 # ----
 # ----
 
-# In[30]:
+# In[51]:
 
 
-with open('test-scores.log.raw', 'r') as file:
+with open('test_one_param-scores.log.raw', 'r') as file:
     raw_scores = file.readlines()
     
 scores = clean_raw_scores(raw_scores)
@@ -183,27 +187,35 @@ gen_size = len(scores[0])
 print(gen_size)
 
 
-# In[31]:
+# In[50]:
 
 
-with open('test-params.log.raw', 'r') as file:
+with open('test_one_param-params.log.raw', 'r') as file:
     raw_params = file.readlines()
     
 params = clean_raw_params(raw_params)
-param_distrib1 = params_to_distrib_over_pop(params, gen=200, param_index=0)
+param_distrib1 = params_to_distrib_over_pop(params, gen=1, param_index=0)
+param_distrib3 = params_to_distrib_over_pop(params, gen=45, param_index=0)
+param_distrib4 = params_to_distrib_over_pop(params, gen=198, param_index=0)
 
-plot_distribution(param_distrib1)
+plot_distribution(param_distrib1, param_distrib3, param_distrib4)
 
 
 gen_size = len(params[0])
 print(gen_size)
 
 
-# In[32]:
+# In[ ]:
 
 
 avg_param = params_to_avg_by_gen(params)
 plot_metric_by_generation(avg_param, metric='Parameter')
+
+
+# In[ ]:
+
+
+print()
 
 
 # In[ ]:

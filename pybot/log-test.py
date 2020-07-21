@@ -1,16 +1,4 @@
-import pytest
-from pybot.genetics import Genetic, BaseAlgorithm, BaseGameEvaluator
-
-import numpy as np
-
-
-@pytest.fixture
-def dummy_genetics():
-    """Genetic object created and initialized with dummy algo."""
-    gen = Genetic(DummyAlgo)
-    gen.populate(100)
-
-    return gen
+from genetics import BaseGameEvaluator, BaseAlgorithm, Genetic
 
 
 class DummyEvaluator(BaseGameEvaluator):
@@ -58,12 +46,12 @@ class DummyMaximazerAlgo(BaseAlgorithm):
     def __init__(self, params=None):
         self.p = 0
         self._score = 0
-        if len(params) != 5:
+        if not params or len(params) != 5:
             raise ValueError("The Maximazer should be initialized with 5 parameters.")
         self._params = list(params)
 
     def run(self, input_state=None):
-        return sum(self._params)
+        return sum(self._params)  # - 2 * self._params[0]
 
     def evaluate(self):
         self._score = self.evaluator.evaluate(self)
@@ -97,7 +85,6 @@ class DummyMaximazerAlgo(BaseAlgorithm):
     def parameter_count(cls):
         return 5
 
-
 class DummyAlgo(BaseAlgorithm):
     """Dummy class for testing.
 
@@ -112,7 +99,7 @@ class DummyAlgo(BaseAlgorithm):
         pass # It won't work with real class
 
     def evaluate(self):
-        self._score = 20 - abs(8 - self.p)
+        self._score = 20 - abs(-10 - self.p)
 
     @property
     def score(self):
@@ -133,3 +120,10 @@ class DummyAlgo(BaseAlgorithm):
     @classmethod
     def parameter_count(cls):
         return 1
+
+
+data = {"crossover_point": 0.1, "mutation_variance": 0.2, "log": "test_one_param"}
+
+gen = Genetic(DummyAlgo, **data)
+gen.populate(200)
+gen.train(400)
