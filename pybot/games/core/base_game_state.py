@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class BaseGameState(ABC):
-    """Base class for game stae representation.
+    """Base class for game state representation.
 
     It provides an API to translate the state of a game from its specific representation
     to a more suitable representation for calculation and algorithm.
@@ -20,7 +20,7 @@ class BaseGameState(ABC):
 
     @property
     def last_move(self):
-        """Return the move that lead to this current state.
+        """Return the move that leads to this current state.
 
         The move may be represented by its uid.
         """

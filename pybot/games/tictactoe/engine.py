@@ -13,12 +13,12 @@ class TictactoeEngine:
         if i < 0 or i >= 3 or j < 0 or j >= 3:
             return False
 
-        if self.board[i][j] != -1:
-            return False
-        return True
+        return self.board[i][j] == -1 # Empty cell
 
     def play(self, move):
-        """Move has the following form: (coordX, coordY)."""
+        """Return True is the move has been played.
+
+        Move is a tuple of the following form: (coordX, coordY)."""
 
         if not self.is_valid_move(move):
             return False

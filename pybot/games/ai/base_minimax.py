@@ -76,12 +76,18 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
     @property
     def parameters(self):
-        """Minimax has no free parameters."""
+        """Minimax has no free parameters.
+
+        However, any sublass can (and should) forward the parameter used by 'state_score'.
+        """
         return []
 
     @parameters.setter
     def parameter(self, parameters):
-        """Minimax has no free parameters."""
+        """Minimax has no free parameters.
+
+        However, any sublass can (and should) forward the parameter used by 'state_score'.
+        """
         pass
 
     @property
