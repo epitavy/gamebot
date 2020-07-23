@@ -63,7 +63,7 @@ class BaseGameEvaluator(BaseEvaluator):
         pass
 
     @abstractmethod
-    def play(move):
+    def play(self, move):
         """Play the given move. This move can be from any player."""
         pass
 

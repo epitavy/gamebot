@@ -10,7 +10,7 @@ class BaseGameState(ABC):
 
     @abstractmethod
     def possible_next_states(self):
-        """Return possible states at a distance of one move from this current sate."""
+        """Return a generator of possible states after this current state."""
         pass
 
     @abstractmethod
