@@ -25,10 +25,14 @@ class Genetic:
         The provided algorithm class should inherit from BaseAlgorithm.
         """
         if not issubclass(Algorithm, BaseAlgorithm):
-            raise Exception("The provided algorithm class should inherit from BaseAlgorithm.")
+            raise Exception(
+                "The provided algorithm class should inherit from BaseAlgorithm."
+            )
 
         self.Algorithm = Algorithm
-        self.default_algo_params = init_parameters if init_parameters else [0, 0, 0, 0, 0]
+        self.default_algo_params = (
+            init_parameters if init_parameters else [0, 0, 0, 0, 0]
+        )
         self.hyper_parameters = self.DEFAULT_HYPER_PARAMETERS.copy()
         self.hyper_parameters.update(hyper_parameters)
 
@@ -81,7 +85,9 @@ class Genetic:
         # This calculation is done here because of the big overhead if done in _select_algorithm
         indexes = np.arange(self.size)
         if self.population_score == 0:
-            probabilities = np.full(self.size, 1 / self.size) # Every algo has the same proba
+            probabilities = np.full(
+                self.size, 1 / self.size
+            )  # Every algo has the same proba
         else:
             probabilities = []
             for algo in self.population:

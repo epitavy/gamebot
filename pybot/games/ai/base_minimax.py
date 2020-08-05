@@ -1,4 +1,4 @@
-from genetics import BaseAlgorithm
+from pybot.genetics import BaseAlgorithm
 from abc import ABC, abstractmethod
 
 
@@ -12,20 +12,19 @@ class BaseMinimax(BaseAlgorithm, ABC):
     def __init__(self):
         self._score = 0
         self._max_depth = (
-            3
-        )  # A depth of 0 means that no branch of the tree is evaluated
+            3  # A depth of 0 means that no branch of the tree is evaluated
+        )
 
     def run(self, input_state):
         """Take a game state as input and return a move, that maybe the uid of the move."""
 
         self._player = input_state.player
-        # alpha and beta need to be non local to vary trought the recursions
-        self._alpha = float("-inf")
-        self._beta = float("+inf")
-        next_state, score = _alphabeta(input_state, self._max_depth)
+        next_state, score = _alphabeta(
+            input_state, self._max_depth, float("-inf"), float("inf")
+        )
         return next_state.last_move
 
-    def _alphabeta(self, state, depth):
+    def _alphabeta(self, state, depth, alpha, beta):
         """Minimax with alpha beta pruning. Return the next state with the highest value."""
         if depth == 0:
             return (state, self.state_score(state))
@@ -37,7 +36,9 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
             for s in next_states:
                 state_score = max(
-                    state_score, self._alphabeta(s, depth - 1), key=lambda x: x[1]
+                    state_score,
+                    self._alphabeta(s, depth - 1, alpha, beta),
+                    key=lambda x: x[1],
                 )
                 if state_score[1] >= beta:
                     return state_score
@@ -48,7 +49,9 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
             for s in next_states:
                 state_score = min(
-                    state_score, self._alphabeta(s, depth - 1), key=lambda x: x[1]
+                    state_score,
+                    self._alphabeta(s, depth - 1, alpha, beta),
+                    key=lambda x: x[1],
                 )
                 if alpha >= state_score[1]:
                     return state_score
@@ -76,15 +79,15 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
     @property
     def parameters(self):
-        """Minimax has no free parameters.
+        """Minimax has no free parameter.
 
-        However, any sublass can (and should) forward the parameter used by 'state_score'.
+        However, any sublass can (and should) forward the parameters used by 'state_score'.
         """
         return []
 
     @parameters.setter
     def parameter(self, parameters):
-        """Minimax has no free parameters.
+        """Minimax has no free parameter.
 
         However, any sublass can (and should) forward the parameter used by 'state_score'.
         """
@@ -101,12 +104,15 @@ class BaseMinimax(BaseAlgorithm, ABC):
             self._max_depth = depth
 
     @property
-    @abstractmehod
+    @abstractmethod
     def evaluator(self):
         """The evaluator type should be a subclass of BaseGameEvaluator."""
         pass
 
     @classmethod
     def parameter_count(cls):
-        """Minimax has no free parameters."""
+        """Minimax has no free parameter.
+
+        Of course any subclass can, it might be interesting !
+        """
         return 0

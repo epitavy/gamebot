@@ -109,7 +109,7 @@ class DummyAlgo(BaseAlgorithm):
         self._score = 0
 
     def run(self, input_state=None):
-        pass # It won't work with real class
+        pass  # It won't work with real class
 
     def evaluate(self):
         self._score = 20 - abs(8 - self.p)
@@ -128,7 +128,7 @@ class DummyAlgo(BaseAlgorithm):
 
     @property
     def evaluator(self):
-        return lambda x: (10 + x.p) / 20 # It won't work with real class
+        return lambda x: (10 + x.p) / 20  # It won't work with real class
 
     @classmethod
     def parameter_count(cls):

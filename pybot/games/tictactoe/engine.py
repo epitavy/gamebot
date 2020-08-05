@@ -17,8 +17,7 @@ class TictactoeEngine(BaseGameEvaluator):
         if i < 0 or i >= 3 or j < 0 or j >= 3:
             return False
 
-        return self.board[i][j] == -1 # Empty cell
-
+        return self.board[i][j] == -1  # Empty cell
 
     def has_win(self, player):
         for i in range(3):
@@ -102,29 +101,27 @@ class TictactoeState(BaseGameState):
     def __init__(self, cell_played, player, board):
         self._board = copy.copy(board)
         self._origin_move = (cell_played, player)
+        self._player = player  # Used in the `player` property of the base class
 
     def possible_next_states(self):
-        player = self._origin_move[1]
 
         for i in range(3):
             for j in range(3):
                 if self._board[i][j] == -1:
-                    self._board[i][j] = player
-                    move = (3 * i + j, player)
+                    self._board[i][j] = self.player
+                    move = (3 * i + j, self.player)
                     yield TictactoeState(move, self.next_player, self._board)
                     self._board[i][j] == -1  # Back to original state
 
-    def to_list(self):
-        flat_board = [self._board[i][j] for i in range(3) for j in range(3)]
-        return flat_board + self._origin_move[1]
-
+    def __iter__(self):
+        yield self._origin_move[1]
+        yield from (self._board[i][j] for i in range(3) for j in range(3))
 
     @property
     def next_player(self):
         if self._origin_move[1] == 0:
             return 1
         return 0
-
 
     def __eq__(self, other):
         return self._board == other._board

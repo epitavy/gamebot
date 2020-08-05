@@ -11,8 +11,10 @@ def test_easy_training(dummy_genetics):
 
     assert abs(param - expected) < 0.15
 
+
 def avg(array):
     return sum(array) / len(array)
+
 
 def test_easy_workflow():
     gen = Genetic(
@@ -28,4 +30,3 @@ def test_easy_workflow():
         curr_avg = avg((b.score for b in bests))
         assert curr_avg >= last_avg
         last_avg = avg
-
