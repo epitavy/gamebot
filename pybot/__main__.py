@@ -10,9 +10,9 @@ if __name__ == "__main__":
             print(f"\t{game.capitalize()}")
         exit(1)
     else:
-        if sys.argv[1] not in games:
+        if sys.argv[1] not in GAMES:
             print(f"The game {sys.argv[1]} is not available", file=sys.stderr)
             exit(1)
 
-        exec(games[sys.argv[1]])
+        exec(GAMES[sys.argv[1]])
         game.run()
