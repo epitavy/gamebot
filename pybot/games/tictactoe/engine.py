@@ -127,4 +127,4 @@ class TictactoeState(BaseGameState):
         return self._board == other._board
 
     def __hash__(self):
-        return hash(tuple(self.to_list()))
+        return hash(tuple(self))

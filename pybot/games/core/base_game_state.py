@@ -14,8 +14,11 @@ class BaseGameState(ABC):
         pass
 
     @abstractmethod
-    def to_list(self):
-        """Return the state in the form of a list of numbers."""
+    def __iter__(self):
+        """Return an iterator over the state.
+
+        We shouldd be able to retrieve the full state from this iterator.
+        """
         pass
 
     @property
