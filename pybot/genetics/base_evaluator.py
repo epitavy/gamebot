@@ -59,7 +59,11 @@ class BaseGameEvaluator(BaseEvaluator):
 
     @abstractmethod
     def algoPlay(self, move):
-        """Play the given move for the algorithm."""
+        """Play the given move for the algorithm.
+
+        It is called by the genetic mechanic, it can be usefull if special treatment should
+        be done before or after the AI plays.
+        """
         pass
 
     @abstractmethod

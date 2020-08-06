@@ -16,48 +16,49 @@ class BaseMinimax(BaseAlgorithm, ABC):
         )
 
     def run(self, input_state):
-        """Take a game state as input and return a move, that maybe the uid of the move."""
+        """Take a game state as input and return a move, that may be the uid of the move."""
 
         self._player = input_state.player
-        next_state, score = _alphabeta(
+        next_state, score = self._alphabeta(
             input_state, self._max_depth, float("-inf"), float("inf")
         )
+        print("Board score:", score)
         return next_state.last_move
 
     def _alphabeta(self, state, depth, alpha, beta):
         """Minimax with alpha beta pruning. Return the next state with the highest value."""
-        if depth == 0:
+        if depth == 0 or state.is_final():
             return (state, self.state_score(state))
 
         next_states = state.possible_next_states()
 
         if state.player == self._player:  # Max node
-            state_score = (None, float("-inf"))
+            state, score = (None, float("-inf"))
 
             for s in next_states:
-                state_score = max(
-                    state_score,
+                state, score = max(
+                    (s, score),
                     self._alphabeta(s, depth - 1, alpha, beta),
                     key=lambda x: x[1],
                 )
-                if state_score[1] >= beta:
-                    return state_score
-                alpha = max(alpha, state_score[1])
+                if score >= beta:
+                    return (s, score)
+                alpha = max(alpha, score)
 
         else:  # Min node
-            state_score = (None, float("+inf"))
+            state, score = (None, float("+inf"))
 
             for s in next_states:
-                state_score = min(
-                    state_score,
+                state, score = min(
+                    (s, score),
                     self._alphabeta(s, depth - 1, alpha, beta),
                     key=lambda x: x[1],
                 )
-                if alpha >= state_score[1]:
-                    return state_score
-                beta = min(beta, state_score[1])
+                if alpha >= score:
+                    return (s, score)
+                beta = min(beta, score)
 
-        return state_score
+        return (state, score)
 
     @abstractmethod
     def state_score(self, state):

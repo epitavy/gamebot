@@ -14,12 +14,10 @@ class BaseGameState(ABC):
         pass
 
     @abstractmethod
-    def __iter__(self):
-        """Return an iterator over the state.
+    def is_final(self):
+        """Return True if it is a final state False otherwise.
 
-        We shouldd be able to retrieve the full state from this iterator.
-        """
-        pass
+        If this state is final possible_next_states must return an empty generator."""
 
     @property
     def last_move(self):
@@ -33,6 +31,14 @@ class BaseGameState(ABC):
     def player(self):
         """Return the player that should play the next move."""
         return self._player
+
+    @abstractmethod
+    def __iter__(self):
+        """Return an iterator over the state.
+
+        We shouldd be able to retrieve the full state from this iterator.
+        """
+        pass
 
     @abstractmethod
     def __eq__(self, other):

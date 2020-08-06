@@ -9,8 +9,8 @@ from ..ai import BaseMinimax
 
 
 class TictactoeMinimax(BaseMinimax):
-    """This class is meant to be pluged directly in the Tictactoe game as it inherits from
-            BaseAlgorithm.
+    """This class is meant to be pluged directly in the Tictactoe game as a player since
+    it inherits from BaseAlgorithm.
     """
 
     @staticmethod
@@ -33,6 +33,8 @@ class TictactoeMinimax(BaseMinimax):
         for i, j in self.two_pieces_patterns():
             if state.player == board[i] and board[i] == board[j]:
                 score += 1
+
+        return score
 
     @property
     def evaluator(self):

@@ -1,7 +1,7 @@
 import copy
 
-from ..core import BaseGameState, mat_to_tuple, mat_to_list
 from pybot.genetics import BaseGameEvaluator
+from ..core import BaseGameState
 
 
 class TictactoeEngine(BaseGameEvaluator):
@@ -10,14 +10,13 @@ class TictactoeEngine(BaseGameEvaluator):
     def __init__(self, player):
         self.board = [[-1 for _ in range(3)] for _ in range(3)]
         self.current_player = player
-        self._state = TictactoeState(None, player, mat_to_tuple(self.board))
+        self._state = TictactoeState(None, player, self.board)
 
-    def is_valid_move(self, move):
-        i, j = move
-        if i < 0 or i >= 3 or j < 0 or j >= 3:
+    def is_valid_move(self, x, y):
+        if x < 0 or x >= 3 or y < 0 or y >= 3:
             return False
 
-        return self.board[i][j] == -1  # Empty cell
+        return self.board[x][y] == -1  # Empty cell
 
     def has_win(self, player):
         for i in range(3):
@@ -70,21 +69,20 @@ class TictactoeEngine(BaseGameEvaluator):
         return self._state
 
     def algoPlay(self, move):
-        self.play(move)
+        return self.play((move // 3, move % 3))
 
     def play(self, move):
         """Return True is the move has been played.
 
-        Move is a tuple of the following form: (coordX, coordY)."""
+        Move is the move id.."""
 
-        if not self.is_valid_move(move):
+        x, y = move
+        if not self.is_valid_move(x, y):
             return False
 
-        i, j = move
-
-        self.board[i][j] = self.current_player
+        self.board[x][y] = self.current_player
         self.next_turn()
-        self._state = TictactoeState(3 * i + j, self.current_player, self.board)
+        self._state = TictactoeState(3 * x + y, self.current_player, self.board)
 
         return True
 
@@ -99,32 +97,43 @@ class TictactoeState(BaseGameState):
     """
 
     def __init__(self, cell_played, player, board):
-        self._board = copy.copy(board)
-        self._origin_move = (cell_played, player)
-        self._player = player  # Used in the `player` property of the base class
+        self._board = copy.deepcopy(board)
+        self._origin_move = cell_played
+        self._origin_player = player
+        self._player = (
+            self.next_player
+        )  # Used in the `player` property of the base class
 
     def possible_next_states(self):
-
         for i in range(3):
             for j in range(3):
                 if self._board[i][j] == -1:
                     self._board[i][j] = self.player
-                    move = (3 * i + j, self.player)
-                    yield TictactoeState(move, self.next_player, self._board)
-                    self._board[i][j] == -1  # Back to original state
+                    cell = 3 * i + j
+                    try:
+                        yield TictactoeState(cell, self.player, self._board)
+                    finally:
+                        self._board[i][j] == -1  # Back to original state
 
-    def __iter__(self):
-        yield self._origin_move[1]
-        yield from (self._board[i][j] for i in range(3) for j in range(3))
+    def is_final(self):
+        for i in range(3):
+            for j in range(3):
+                if self._board[i][j] == -1:
+                    return False
+        return True
 
     @property
     def next_player(self):
-        if self._origin_move[1] == 0:
+        if self._origin_player == 0:
             return 1
         return 0
 
+    def __iter__(self):
+        yield self._origin_player
+        yield from (self._board[i][j] for i in range(3) for j in range(3))
+
     def __eq__(self, other):
-        return self._board == other._board
+        return self._board == other._board and self._player == other._player
 
     def __hash__(self):
         return hash(tuple(self))
