@@ -33,7 +33,7 @@ class BaseGameEvaluator(BaseEvaluator):
         for _ in range(n):
             self.reset()
 
-            while not self.is_over:
+            while not self.is_over():
                 move = algorithm.run(self.state)
                 self.algoPlay(move)
 

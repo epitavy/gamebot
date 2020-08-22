@@ -60,7 +60,6 @@ class TictactoeEngine(BaseGameEvaluator):
     def reset(self):
         self.board = [[-1 for _ in range(3)] for _ in range(3)]
 
-    @property
     def is_over(self):
         return self.has_win(0) or self.has_win(1)
 
