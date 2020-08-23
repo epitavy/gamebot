@@ -1,7 +1,7 @@
 import copy
 
 from gamebot.genetics import BaseGameEvaluator
-from ..core import BaseGameState
+from gamebot.interface import BaseGameState
 
 
 class TictactoeEngine(BaseGameEvaluator):

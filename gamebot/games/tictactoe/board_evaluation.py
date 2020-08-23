@@ -5,7 +5,7 @@
     give very basic hints to make the AI win a game against a beginner player.
 """
 
-from ..ai import BaseMinimax
+from gamebot.ai import BaseMinimax
 
 
 class TictactoeMinimax(BaseMinimax):
