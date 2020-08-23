@@ -23,7 +23,7 @@ class TictactoeMinimax(BaseMinimax):
                     yield (i, j)
 
         # yield diagonals
-        yield from [(0, 4), (0, 8), (2, 4), (2, 6)]
+        yield from [(0, 4), (0, 8), (4, 8), (2, 4), (2, 6), (4, 6)]
 
     def state_score(self, state):
         """This function uses a TictactoeState object as state."""
@@ -33,6 +33,8 @@ class TictactoeMinimax(BaseMinimax):
         for i, j in self.two_pieces_patterns():
             if state.player == board[i] and board[i] == board[j]:
                 score += 1
+            elif state.next_player == board[i] and board[i] == board[j]:
+                score -= 1
 
         return score
 

@@ -45,18 +45,6 @@ class BaseGameEvaluator(BaseEvaluator):
         """After a reset, scoring should return 0."""
         pass
 
-    @property
-    @abstractmethod
-    def is_over(self):
-        """Return a boolean to indicate whether or not the evaluation is over."""
-        pass
-
-    @property
-    @abstractmethod
-    def state(self):
-        """Return the current state of the game. It may be normalized for the algorithm input."""
-        pass
-
     @abstractmethod
     def algoPlay(self, move):
         """Play the given move for the algorithm.
@@ -74,4 +62,20 @@ class BaseGameEvaluator(BaseEvaluator):
     @abstractmethod
     def scoring(self):
         """Get the score for the algorithm player."""
+        pass
+
+    @abstractmethod
+    def is_over(self):
+        """Return True is the game is over, i.e. no move can be played."""
+        pass
+
+    @abstractmethod
+    def get_winner(self):
+        """Return the player that won, -1 if it is a tie or None if it cannot be deduced yet."""
+        pass
+
+    @property
+    @abstractmethod
+    def state(self):
+        """Return the current state of the game. It may be normalized for the algorithm input."""
         pass

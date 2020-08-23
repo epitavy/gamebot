@@ -3,11 +3,12 @@ from .board_evaluation import TictactoeMinimax
 
 
 def run():
-    game = TictactoeEngine(0)
+    game = TictactoeEngine(1)
     bot = TictactoeMinimax()
+    bot.max_depth = 7
 
     print_board(game.board)
-    while not is_over(game):
+    while not game.is_over():
         if game.current_player == 0:  # AI plays
             move = bot.run(game.state)
 
@@ -37,6 +38,11 @@ def run():
             print_board(game.board)
 
     print("Finished!")
+    winner = game.get_winner()
+    if winner == -1:
+        print("No player win, it's a tie!")
+    else:
+        print("Player", to_sign(winner), "win")
 
 
 """All of this should be put in a separate file which purpose is more or less "game cli"."""
@@ -55,7 +61,3 @@ def print_board(board):
     for line in board:
         print(f"|{to_sign(line[0])}|{to_sign(line[1])}|{to_sign(line[2])}|")
         print("-------")
-
-
-def is_over(game):
-    return game.has_win(0) or game.has_win(1)
