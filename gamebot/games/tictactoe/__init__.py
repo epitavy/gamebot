@@ -1,5 +1,6 @@
 from .engine import TictactoeEngine
 from .board_evaluation import TictactoeMinimax
+from gamebot.interface.tictactoe_cli import *
 
 
 def run():
@@ -43,21 +44,3 @@ def run():
         print("No player win, it's a tie!")
     else:
         print("Player", to_sign(winner), "win")
-
-
-"""All of this should be put in a separate file which purpose is more or less "game cli"."""
-
-
-def to_sign(cell):
-    if cell == -1:
-        return " "
-    elif cell == 0:
-        return "x"
-    else:
-        return "o"
-
-
-def print_board(board):
-    for line in board:
-        print(f"|{to_sign(line[0])}|{to_sign(line[1])}|{to_sign(line[2])}|")
-        print("-------")
