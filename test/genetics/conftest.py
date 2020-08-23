@@ -26,9 +26,11 @@ class DummyEvaluator(BaseGameEvaluator):
         self.turn_count = 0
         self.point_count = 0
 
-    @property
     def is_over(self):
         return self.turn_count >= 10
+
+    def get_winner(self):
+        pass
 
     @property
     def state(self):
