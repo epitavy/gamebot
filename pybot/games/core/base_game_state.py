@@ -47,11 +47,3 @@ class BaseGameState(ABC):
     @abstractmethod
     def __hash__(self):
         pass
-
-
-def mat_to_tuple(mat):
-    return tuple(tuple(line) for line in mat)
-
-
-def mat_to_list(mat):
-    return list(list(line) for line in mat)
