@@ -101,8 +101,10 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
     @max_depth.setter
     def max_depth(self, depth):
-        if depth >= 0:
+        if depth > 0:
             self._max_depth = depth
+        else:
+            raise ValueError("Depth should be strictly positive")
 
     @property
     @abstractmethod
