@@ -1,4 +1,4 @@
-from pybot.genetics import BaseAlgorithm
+from gamebot.genetics import BaseAlgorithm
 from abc import ABC, abstractmethod
 
 from sys import float_info

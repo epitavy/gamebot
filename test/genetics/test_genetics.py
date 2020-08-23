@@ -1,4 +1,4 @@
-from pybot.genetics import Genetic
+from gamebot.genetics import Genetic
 from conftest import DummyMaximazerAlgo
 
 

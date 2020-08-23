@@ -1,8 +1,8 @@
 if __name__ == "__main__":
     import sys
-    import pybot
+    import gamebot
 
-    GAMES = {"tictactoe": "import pybot.games.tictactoe as game"}
+    GAMES = {"tictactoe": "import gamebot.games.tictactoe as game"}
 
     if len(sys.argv) != 2:
         print(f"Usage:\n\t{sys.argv[0]} <game>\nGames:\n", end="", file=sys.stderr)

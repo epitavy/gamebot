@@ -1,6 +1,6 @@
 import copy
 
-from pybot.genetics import BaseGameEvaluator
+from gamebot.genetics import BaseGameEvaluator
 from ..core import BaseGameState
 
 

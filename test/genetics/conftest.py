@@ -1,5 +1,5 @@
 import pytest
-from pybot.genetics import Genetic, BaseAlgorithm, BaseGameEvaluator
+from gamebot.genetics import Genetic, BaseAlgorithm, BaseGameEvaluator
 
 import numpy as np
 
