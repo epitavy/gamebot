@@ -1,4 +1,4 @@
-from .engine import TictactoeEngine
+from .engine import TictactoeEngine, TictactoeState
 from .board_evaluation import TictactoeMinimax
 from gamebot.interface.tictactoe_cli import *
 

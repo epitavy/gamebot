@@ -5,7 +5,7 @@ from gamebot.interface import BaseGameState
 
 
 class TictactoeEngine(BaseGameEvaluator):
-    """Tictactoe game logic is fully encapsulated in this class."""
+    """The game engine for tictactoe."""
 
     def __init__(self, player):
         self.board = [[-1 for _ in range(3)] for _ in range(3)]
@@ -69,7 +69,9 @@ class TictactoeEngine(BaseGameEvaluator):
 
 
 class TictactoeState(BaseGameState):
-    """A move in tictactoe is represented with the number of the cell and the player in a tuple."
+    """Tictactoe game logic is fully encapsulated in this class.
+
+    A move in tictactoe is represented with the number of the cell and the player in a tuple.
 
     The player is either 0 or 1. An empty cell is represented by -1.
     """
@@ -97,7 +99,7 @@ class TictactoeState(BaseGameState):
             for j in range(3):
                 if self._board[i][j] == -1:
                     return False
-        return True
+        return not (self.has_won(0) or self.has_won(1))
 
     def has_won(self, player):
         for i in range(3):
