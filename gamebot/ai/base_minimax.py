@@ -1,10 +1,6 @@
 from gamebot.genetics import BaseAlgorithm
 from abc import ABC, abstractmethod
 
-from sys import float_info
-
-MAX_FLOAT = float_info.max
-
 
 class BaseMinimax(BaseAlgorithm, ABC):
     """An implementation of minimax with alpha beta pruning.
@@ -35,9 +31,9 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
         # Handle final cases
         if state.has_won(state.player):
-            return -MAX_FLOAT
+            return -1e9 - depth  # Even if it is a loose, loose as far as possible
         if state.has_won(state.next_player):
-            return MAX_FLOAT
+            return 1e9 + depth  # Win as early as possible
         if depth == 0:
             return self.state_score(state)
         if state.is_tie():
