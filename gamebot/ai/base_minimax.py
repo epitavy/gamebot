@@ -7,10 +7,10 @@ class BaseMinimax(BaseAlgorithm, ABC):
 
     It is designed to run with a BaseGameEvaluator as evaluator.
     The only abstract methods are the state evaluation method and the evaluator property
-    that should be implemented for any subclass."""
+    that should be implemented for any concrete subclass."""
 
     def __init__(self):
-        self._score = 1
+        self._score = 0
         self._max_depth = (
             3  # A depth of 0 means that no branch of the tree is evaluated
         )
@@ -58,7 +58,7 @@ class BaseMinimax(BaseAlgorithm, ABC):
     def state_score(self, state):
         """Return the estimated score for the given state.
 
-        The score should be positive if the player (from the `player`property)  is likely to win
+        The score should be positive if the player (from the `player` property)  is likely to win
         and negative if he his likely to loose.
         Final states might be ignored in this evaluation, minimax alogorithm already check that.
         """

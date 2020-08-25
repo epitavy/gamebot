@@ -20,7 +20,7 @@ class BaseAlgorithm(ABC):
     @property
     @abstractmethod
     def score(self):
-        """Return the score of the algorithm. It is positive"""
+        """Return the score of the algorithm. It is positive."""
         pass
 
     @property
