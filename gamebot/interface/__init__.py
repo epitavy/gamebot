@@ -1,1 +1,1 @@
-from .base_game_state import BaseGameState
+from .tictactoe_cli import TictactoeCLI
