@@ -31,8 +31,8 @@ class BaseMinimaxMLP(BaseMinimax, ABC):
         """Return the MLP parameters in a numpy 1D array."""
         params = []
         for layer in self.mlp.layers:
-            params.extend(np.flatten(layer[0]))
-            params.extend(np.flatten(layer[1]))
+            params.extend(layer[0].ravel())
+            params.extend(layer[1].ravel())
 
         return np.array(params)
 

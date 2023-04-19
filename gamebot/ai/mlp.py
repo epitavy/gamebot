@@ -22,7 +22,7 @@ class MLP():
         self.layers = []
         for i in range(len(shape) - 1):
             weights = np.random.uniform(-1, 1, (shape[i + 1], shape[i]))
-            biases = np.random.uniform(-1, 1, (shape[i + 1], 1))
+            biases = np.random.uniform(-1, 1, shape[i + 1])
             self.layers.append((weights, biases))
 
     def forward_propagation(self, X):
