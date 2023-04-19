@@ -14,11 +14,6 @@ class BaseAlgorithm(ABC):
         """Run the algorithm with the given input_state and return a move."""
         pass
 
-    @abstractmethod
-    def evaluate(self):
-        """Evaluate the algorithm. It should set the just calculated score."""
-        pass
-
     @property
     @abstractmethod
     def score(self):
@@ -42,10 +37,4 @@ class BaseAlgorithm(ABC):
         The data should be unormalized to fit the internal algorithm representation.
         The given parameters are normalized as returned by the getter.
         """
-        pass
-
-    @property
-    @abstractmethod
-    def evaluator(self):
-        """Return an instance specific evaluator."""
         pass

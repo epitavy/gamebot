@@ -25,7 +25,7 @@ class Genetic:
         "log": None,  # If None, doesn't log, otherwise log to the given file
     }
 
-    def __init__(self, Algorithm, **hyper_parameters):
+    def __init__(self, Algorithm, *init_parameters, **hyper_parameters):
         """Initilize a Genetic object with the given Algorithm class.
 
         The provided algorithm class should inherit from BaseAlgorithm.
@@ -36,6 +36,7 @@ class Genetic:
             )
 
         self.Algorithm = Algorithm
+        self.init_parameters = init_parameters
         self.hyper_parameters = self.DEFAULT_HYPER_PARAMETERS.copy()
         self.hyper_parameters.update(hyper_parameters)
         self.size = 0
@@ -43,7 +44,7 @@ class Genetic:
     def populate(self, size):
         """Initialize the population of algorithm to be trained."""
         self.size = size
-        self.population = [self.Algorithm() for _ in range(size)]
+        self.population = [self.Algorithm(*self.init_parameters) for _ in range(size)]
 
     def train(self, n):
         """Train the population over n generations."""

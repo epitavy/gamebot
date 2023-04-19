@@ -1,5 +1,5 @@
 import pytest
-from gamebot.genetics import BaseAlgorithm, BaseGameEvaluator
+from gamebot.genetics import BaseAlgorithm
 
 import numpy as np
 
@@ -22,41 +22,6 @@ def algo_sixhump_camelback():
 @pytest.fixture
 def algo_stepwise():
     return StepwiseAlgo
-
-
-class DummyEvaluator(BaseGameEvaluator):
-    """Dummy class for testing.
-
-    It implements only the core workflow of an evaluator."""
-
-    def __init(self):
-        self.reset()
-
-    def reset(self):
-        self.score = 0
-        self.turn_count = 0
-        self.point_count = 0
-
-    def is_over(self):
-        return self.turn_count >= 10
-
-    def get_winner(self):
-        pass
-
-    @property
-    def state(self):
-        return [self.turn_count]
-
-    def algoPlay(self, move):
-        self.play(move)
-        self.turn_count += 1
-
-    def play(self, move):
-        self.point_count += move
-
-    def scoring(self):
-        score = self.point_count // self.turn_count
-        return score if score > 0 else 0
 
 
 class AlgoTemplate(BaseAlgorithm):
@@ -90,9 +55,6 @@ class AlgoTemplate(BaseAlgorithm):
             params = np.clip(params, *self.bounds)
         self._parameters = list(params)
 
-    def evaluator(self):
-        pass
-
     @property
     def score(self):
         return self._score
@@ -110,6 +72,9 @@ class DummyAlgoOneParam(AlgoTemplate):
     def evaluate(self):
         self._score = 20 - abs(8 - self._parameters[0])
 
+    def run(self, input_state=None):
+        return np.sum(self._parameters)
+
     @property
     def score(self):
         return self._score if self._score > 0 else 0
@@ -122,22 +87,14 @@ class DummyMaximizerAlgoFiveParams(AlgoTemplate):
     We suppose the parameters all positive bounded to 100
     """
 
-    _evaluator = None
     parameter_count = 5
     bounds = (0, 100)
 
     def evaluate(self):
-        self._score = self.evaluator.evaluate(self)
+        self._score = np.sum(self._parameters)
 
     def run(self, input_state=None):
         return np.sum(self._parameters)
-
-    @property
-    def evaluator(self):
-        if self._evaluator is None:
-            self._evaluator = DummyEvaluator()
-
-        return self._evaluator
 
 
 class SixHumpCamelBackAlgo(AlgoTemplate):

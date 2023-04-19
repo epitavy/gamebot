@@ -1,10 +1,9 @@
 import copy
 
-from gamebot.genetics import BaseGameEvaluator
 from gamebot.games import BaseGameState
 
 
-class TictactoeEngine(BaseGameEvaluator):
+class TictactoeEngine():
     """The game engine for tictactoe."""
 
     def __init__(self, player):
@@ -23,8 +22,6 @@ class TictactoeEngine(BaseGameEvaluator):
             self.current_player = 1
         else:
             self.current_player = 0
-
-    """BaseGameEvaluator API"""
 
     def reset(self):
         self.board = [[-1 for _ in range(3)] for _ in range(3)]
@@ -57,9 +54,6 @@ class TictactoeEngine(BaseGameEvaluator):
         self._state = TictactoeState(move, self.current_player, self.board)
 
         return True
-
-    def scoring(self):
-        return 0
 
     @property
     def state(self):

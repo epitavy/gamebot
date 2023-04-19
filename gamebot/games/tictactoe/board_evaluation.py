@@ -37,7 +37,3 @@ class TictactoeMinimax(BaseMinimax):
                 score -= 1
 
         return score
-
-    @property
-    def evaluator(self):
-        pass

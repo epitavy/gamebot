@@ -5,7 +5,12 @@ GAMES = {"tictactoe": tictactoe}
 
 parser = argparse.ArgumentParser()
 parser.add_argument("game", choices=list(GAMES.keys()))
+parser.add_argument("--training", action="store_true")
 args = parser.parse_args()
 
-game = GAMES[args.game]
-game.run()
+if args.training:
+    from gamebot.games.tictactoe import training
+    training.run()
+else:
+    game = GAMES[args.game]
+    game.run()

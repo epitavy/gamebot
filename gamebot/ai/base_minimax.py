@@ -64,9 +64,6 @@ class BaseMinimax(BaseAlgorithm, ABC):
         """
         pass
 
-    def evaluate(self):
-        self._score = self.evaluator.evaluate(self)
-
     @property
     def score(self):
         return self._score
@@ -98,9 +95,3 @@ class BaseMinimax(BaseAlgorithm, ABC):
             self._max_depth = depth
         else:
             raise ValueError("Depth should be strictly positive")
-
-    @property
-    @abstractmethod
-    def evaluator(self):
-        """The evaluator type should be a subclass of BaseGameEvaluator."""
-        pass
