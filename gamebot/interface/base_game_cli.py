@@ -33,7 +33,7 @@ class BaseGameCLI(ABC):
         """Ask the user a move and plays it on the engine."""
         while True:
             try:
-                move = input(f"Move {self.player_to_sign(self.engine.current_player)}")
+                move = input(f"Move {self.player_to_sign(self.engine.current_player)}: ")
             except EOFError:
                 asw = input("\rDo you want to exit the game? y/n ")
                 if asw[0].lower() == "y":
@@ -108,6 +108,7 @@ class BaseGameCLI(ABC):
                         print(
                             "Cannot understand which one of human or bot you choose, type again."
                         )
+                break
             except EOFError:
                 asw = input("\nDo you want to exit the game? y/n ")
                 if asw[0].lower() == "y":
@@ -117,7 +118,7 @@ class BaseGameCLI(ABC):
             except Exception:
                 print("Invalid input, start again.")
 
-            return (player1, player2)
+        return (player1, player2)
 
     def run_cli(self):
         """Run a game cli with the given engine and bot defined, as class attributes, until the game stops."""

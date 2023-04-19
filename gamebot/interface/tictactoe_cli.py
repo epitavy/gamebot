@@ -1,3 +1,5 @@
+from colored import fg, attr
+
 from gamebot.games.tictactoe import TictactoeEngine, TictactoeMinimax
 from .base_game_cli import BaseGameCLI
 
@@ -15,9 +17,9 @@ class TictactoeCLI(BaseGameCLI):
         if cell == -1:
             return " "
         elif cell == 0:
-            return "x"
+            return fg("blue") + attr("bold") + "x" + attr("reset")
         else:
-            return "o"
+            return fg("yellow") + attr("bold") + "o" + attr("reset")
 
     @classmethod
     def print_board(cls, board):
