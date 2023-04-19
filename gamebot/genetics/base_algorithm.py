@@ -7,9 +7,11 @@ class BaseAlgorithm(ABC):
     It defines the API needed by the Genetic class to work correctly
     """
 
+    parameter_count = 0
+
     @abstractmethod
     def run(self, input_state):
-        """Run the algorithm with the given input_state."""
+        """Run the algorithm with the given input_state and return a move."""
         pass
 
     @abstractmethod
@@ -46,10 +48,4 @@ class BaseAlgorithm(ABC):
     @abstractmethod
     def evaluator(self):
         """Return an instance specific evaluator."""
-        pass
-
-    @classmethod
-    @abstractmethod
-    def parameter_count(cls):
-        """Return the total count of free parameters."""
         pass

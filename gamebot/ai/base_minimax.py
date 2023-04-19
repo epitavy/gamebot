@@ -16,11 +16,11 @@ class BaseMinimax(BaseAlgorithm, ABC):
         )
 
     def run(self, input_state):
-        """Take a game state as input and return a move, that may be the uid of the move."""
+        """Take a game state as input and return a move uid."""
 
         self._player = input_state.player
         self._bestmove = None
-        score = self._alphabeta(input_state, self._max_depth, float("-inf"))
+        self._alphabeta(input_state, self._max_depth, float("-inf"))
 
         return self._bestmove
 
@@ -83,7 +83,7 @@ class BaseMinimax(BaseAlgorithm, ABC):
     def parameter(self, parameters):
         """Minimax has no free parameter.
 
-        However, any sublass can (and should) forward the parameter used by 'state_score'.
+        However, any sublass can (and should) forward the parameter used by `state_score`.
         """
         pass
 
@@ -104,11 +104,3 @@ class BaseMinimax(BaseAlgorithm, ABC):
     def evaluator(self):
         """The evaluator type should be a subclass of BaseGameEvaluator."""
         pass
-
-    @classmethod
-    def parameter_count(cls):
-        """Minimax has no free parameter.
-
-        Of course any subclass can, it might be interesting !
-        """
-        return 0

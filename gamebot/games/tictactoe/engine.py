@@ -43,20 +43,18 @@ class TictactoeEngine(BaseGameEvaluator):
         return None
 
     def algoPlay(self, move):
-        return self.play((move // 3, move % 3))
+        return self.play(move)
 
     def play(self, move):
-        """Return True is the move has been played.
+        """Return True if the move has been played."""
 
-        Move is the move id."""
-
-        x, y = move
+        x, y = move // 3,  move % 3
         if not self.is_valid_move(x, y):
             return False
 
         self.board[x][y] = self.current_player
         self.next_turn()
-        self._state = TictactoeState(3 * x + y, self.current_player, self.board)
+        self._state = TictactoeState(move, self.current_player, self.board)
 
         return True
 

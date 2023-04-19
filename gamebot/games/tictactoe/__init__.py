@@ -7,4 +7,4 @@ def run():
     from gamebot.interface import TictactoeCLI
 
     print("\nHello! Welcome in Tictactoe!\n")
-    TictactoeCLI.run_cli()
+    TictactoeCLI().run_cli()

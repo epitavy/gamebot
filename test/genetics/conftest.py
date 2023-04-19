@@ -1,16 +1,27 @@
 import pytest
-from gamebot.genetics import Genetic, BaseAlgorithm, BaseGameEvaluator
+from gamebot.genetics import BaseAlgorithm, BaseGameEvaluator
 
 import numpy as np
 
 
 @pytest.fixture
-def dummy_genetics():
-    """Genetic object created and initialized with dummy algo."""
-    gen = Genetic(DummyAlgo)
-    gen.populate(100)
+def algo_one_param():
+    return DummyAlgoOneParam
 
-    return gen
+
+@pytest.fixture
+def algo_five_params():
+    return DummyMaximizerAlgoFiveParams
+
+
+@pytest.fixture
+def algo_sixhump_camelback():
+    return SixHumpCamelBackAlgo
+
+
+@pytest.fixture
+def algo_stepwise():
+    return StepwiseAlgo
 
 
 class DummyEvaluator(BaseGameEvaluator):
@@ -48,7 +59,63 @@ class DummyEvaluator(BaseGameEvaluator):
         return score if score > 0 else 0
 
 
-class DummyMaximazerAlgo(BaseAlgorithm):
+class AlgoTemplate(BaseAlgorithm):
+
+    parameter_count = 0
+    bounds = (0, 1)
+    clip_bounds = True
+
+    def __init__(self):
+        self._score = 0
+        self._parameters = np.random.uniform(*self.bounds, self.parameter_count)
+
+    def run(self, input_state=None):
+        pass
+
+    @property
+    def parameters(self):
+        old_range = self.bounds[1] - self.bounds[0]
+        new_range = 2
+        params = np.array(self._parameters)
+        return (params - self.bounds[0]) * new_range / old_range - 1
+
+    @parameters.setter
+    def parameters(self, parameters):
+        old_range = 2
+        new_range = self.bounds[1] - self.bounds[0]
+        params = np.array(parameters)
+        params = (params + 1) * new_range / old_range + self.bounds[0]
+
+        if self.clip_bounds:
+            params = np.clip(params, *self.bounds)
+        self._parameters = list(params)
+
+    def evaluator(self):
+        pass
+
+    @property
+    def score(self):
+        return self._score
+
+
+class DummyAlgoOneParam(AlgoTemplate):
+    """Dummy class for testing.
+
+    We suppose that the parameter can vary between -10 and 10 and that 8 is the optimal value.
+    """
+
+    parameter_count = 1
+    bounds = (-10, 10)
+
+    def evaluate(self):
+        self._score = 20 - abs(8 - self._parameters[0])
+
+    @property
+    def score(self):
+        return self._score if self._score > 0 else 0
+
+
+class DummyMaximizerAlgoFiveParams(AlgoTemplate):
     """Dummy class for testing.
 
     It has five parameters and returns the sum of the five when run.
@@ -56,37 +123,14 @@ class DummyMaximazerAlgo(BaseAlgorithm):
     """
 
     _evaluator = None
-
-    def __init__(self, params=None):
-        self.p = 0
-        self._score = 0
-        if len(params) != 5:
-            raise ValueError("The Maximazer should be initialized with 5 parameters.")
-        self._params = list(params)
-
-    def run(self, input_state=None):
-        return sum(self._params)
+    parameter_count = 5
+    bounds = (0, 100)
 
     def evaluate(self):
         self._score = self.evaluator.evaluate(self)
 
-    @property
-    def score(self):
-        return self._score
-
-    @property
-    def parameters(self):
-        return [p / 100 for p in self._params]
-
-    @parameters.setter
-    def parameters(self, parameters):
-        for i in range(5):
-            p = parameters[i] * 100
-            if p < 0:
-                p = 0
-            elif p > 100:
-                p = 100
-            self._params[i] = p
+    def run(self, input_state=None):
+        return np.sum(self._parameters)
 
     @property
     def evaluator(self):
@@ -95,43 +139,52 @@ class DummyMaximazerAlgo(BaseAlgorithm):
 
         return self._evaluator
 
-    @classmethod
-    def parameter_count(cls):
-        return 5
 
+class SixHumpCamelBackAlgo(AlgoTemplate):
+    """Testing minimization of the six-hump camel-back function.
 
-class DummyAlgo(BaseAlgorithm):
-    """Dummy class for testing.
-
-    We suppose that the parameter can vary between -10 and 10 and that 8 is the optimal value.
+    Parameter x1 is in [-2, 2] and x2 in [-1, 1].
     """
 
-    def __init__(self, params=None):
-        self.p = 0
-        self._score = 0
+    parameter_count = 2
 
-    def run(self, input_state=None):
-        pass  # It won't work with real class
+    @staticmethod
+    def _sixhump_camelback(x1, x2):
+        return (4 - 2.1 * x1**2 + x1**4 / 3) * x1**2 + x1*x2 + (-4 + 4*x2**2) * x2**2
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        x1 = np.random.uniform(-2, 2, 1)[0]
+        x2 = np.random.uniform(-1, 1, 1)[0]
+        self._parameters = [x1, x2]
 
     def evaluate(self):
-        self._score = 20 - abs(8 - self.p)
-
-    @property
-    def score(self):
-        return self._score if self._score > 0 else 0
+        self._score = 10 - self._sixhump_camelback(*self._parameters) - 1.0316
 
     @property
     def parameters(self):
-        return [self.evaluator(self)]
+        x1 = self._parameters[0] / 2
+        x2 = self._parameters[1]
+
+        return np.array([x1, x2])
 
     @parameters.setter
     def parameters(self, parameters):
-        self.p = parameters[0] * 20 - 10
+        x1, x2 = parameters
+        x1 = np.clip(x1 * 2, -2, 2)
+        x2 = np.clip(x2, -1, 1)
+        self._parameters = [x1, x2]
 
-    @property
-    def evaluator(self):
-        return lambda x: (10 + x.p) / 20  # It won't work with real class
 
-    @classmethod
-    def parameter_count(cls):
-        return 1
+class StepwiseAlgo(AlgoTemplate):
+    """Testing minimization of a stepwise continuous function."""
+
+    parameter_count = 5
+    bounds = (-512, 512)
+
+    @staticmethod
+    def _stepwise(x):
+        return np.sum(np.floor(x))
+
+    def evaluate(self):
+        self._score = 512 * 5 - self._stepwise(self._parameters)

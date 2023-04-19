@@ -1,6 +1,11 @@
+from copy import deepcopy
+
 from .base_algorithm import BaseAlgorithm
 import numpy as np
-import copy
+from numpy.random import default_rng
+
+
+rng = default_rng()
 
 
 class Genetic:
@@ -8,18 +13,19 @@ class Genetic:
 
     It's intent is to provided an API to train an algorithm with genetic
     algorithm without implementing it.
-    The algorithm to tune should have free parameters.
+    The algorithm to tune should have free parameters, the expected bounds
+    are [-1, 1] for each of them
     """
 
     DEFAULT_HYPER_PARAMETERS = {
-        "crossover_point": 0.2,  # The point where the crossover between two algo is made
-        "mutation_prob": 0.1,  # The probability of mutation of one parameter
-        "mutation_variance": 0.4,  # The variance used in the normal distribution for the mutation
-        "mutation_mean": 0.5,  # The mean used in the normal distribution for the mutation
+        "crossover_alpha": 0.5,  # BLX-alpha crossover param, exploration parameter
+        "NUM_b": 2,  # Non-Uniform Mutation b param, design parameter
+        "mutation_prob": 0.5,  # The probability of mutation of one parameter
+        "crossover_prob": 0.25,  # The probability of crossover for one chromosome
         "log": None,  # If None, doesn't log, otherwise log to the given file
     }
 
-    def __init__(self, Algorithm, *init_parameters, **hyper_parameters):
+    def __init__(self, Algorithm, **hyper_parameters):
         """Initilize a Genetic object with the given Algorithm class.
 
         The provided algorithm class should inherit from BaseAlgorithm.
@@ -30,27 +36,29 @@ class Genetic:
             )
 
         self.Algorithm = Algorithm
-        self.default_algo_params = (
-            init_parameters if init_parameters else [0, 0, 0, 0, 0]
-        )
         self.hyper_parameters = self.DEFAULT_HYPER_PARAMETERS.copy()
         self.hyper_parameters.update(hyper_parameters)
+        self.size = 0
 
     def populate(self, size):
         """Initialize the population of algorithm to be trained."""
         self.size = size
-        self.population = [
-            self.Algorithm(params=self.default_algo_params) for _ in range(size)
-        ]
+        self.population = [self.Algorithm() for _ in range(size)]
 
     def train(self, n):
         """Train the population over n generations."""
+
+        self.max_gen = n
+        self.current_gen = 0
+        self.log_data = {"scores": [], "params": []}
+
         for i in range(n):
+            self.current_gen = i
             print(f"\r.....Training generation {i+1}/{n}", end="\t")
             self._evaluate()
             self._sort()
             if self.hyper_parameters["log"] is not None:
-                Genetic.log(self.hyper_parameters["log"], self.population, i)
+                self.log(self.population, i)
             self._evolve()
 
     def bests(self, n):
@@ -77,27 +85,36 @@ class Genetic:
     def _evolve(self):
         """Make the whole population evolve.
 
-        The population is crossed and mutated. The best algorithms
-        are choosen to be crossed and mutated according to some parameters.
+        The population is crossed and mutated using the best algorithms.
         """
         new_generation = []
 
-        # This calculation is done here because of the big overhead if done in _select_algorithm
+        # Elitism, keep 1% of bests without crossover and mutation
+        elites_size = self.size // 100
+        new_generation.extend(self.bests(elites_size))
+
         indexes = np.arange(self.size)
         if self.population_score == 0:
-            probabilities = np.full(
-                self.size, 1 / self.size
-            )  # Every algo has the same proba
+            probabilities = np.full(self.size, 1 / self.size)
         else:
             probabilities = []
             for algo in self.population:
                 probabilities.append(algo.score / self.population_score)
 
-        for _ in range(self.size):
+        for _ in range(self.size - elites_size):
             parent1 = self._select_algorithm(indexes, probabilities)
             parent2 = self._select_algorithm(indexes, probabilities)
-            evolved = self._cross_mutate(parent1, parent2)
-            new_generation.append(evolved)
+
+            if rng.random() < self.hyper_parameters["crossover_prob"]:
+                child = self._crossover(parent1, parent2)
+            else:
+                if parent1.score > parent2.score:
+                    child = deepcopy(parent1)
+                else:
+                    child = deepcopy(parent2)
+
+            self._mutate(child)
+            new_generation.append(child)
 
         self.population = new_generation
 
@@ -107,57 +124,51 @@ class Genetic:
         The score of each algorithm can be see as a probability to be selected.
         """
 
-        choosen = np.random.choice(indexes, p=probabilities)
+        choosen = rng.choice(indexes, p=probabilities)
         return self.population[choosen]
 
-    def _cross_mutate(self, algo1, algo2):
-        """Do a crossover of the two algorithms and mutate the resulting one"""
-        child = copy.deepcopy(algo1)
-        crossover_index = int(
-            self.hyper_parameters["crossover_point"] * self.Algorithm.parameter_count()
-        )
-        child.parameters[crossover_index:] = algo2.parameters[crossover_index:]
-        self._mutate(child)
+    def _crossover(self, parent1, parent2):
+        """Do a crossover of the two algorithms.
+
+        Implement the BLX-alpha crossover.
+        """
+        child = self.Algorithm()
+
+        alpha = self.hyper_parameters["crossover_alpha"]
+        cmin = np.minimum(parent1.parameters, parent2.parameters)
+        cmax = np.maximum(parent1.parameters, parent2.parameters)
+        low = (1 + alpha) * cmin - alpha * cmax
+        high = (1 + alpha) * cmax - alpha * cmin
+        child.parameters = rng.uniform(low, high)
 
         return child
 
     def _mutate(self, algo):
-        """Mutate the parameters of the algorihm.
+        """Mutate the parameters of the algorihm  using non uniform mutation
 
-        By default, the parameters are expected to be in the interval [0, 1].
-        The mutation is applied on a subpart of the parameters. Each mutation follows a normal
-        distribution.
+        The mutation is applied on a subpart of the parameters..
         """
-        mutation_mean = self.hyper_parameters["mutation_mean"]
-        mutation_variance = self.hyper_parameters["mutation_variance"]
-
         parameters = algo.parameters  # Uses the getter defined in the class Algorithm
+        power = (1 - self.current_gen / self.max_gen)
 
-        for param_i in range(self.Algorithm.parameter_count()):
-            if np.random.ranf() < self.hyper_parameters["mutation_prob"]:
-                mutation = np.random.normal(mutation_mean, mutation_variance)
-                parameters[param_i] += mutation
-                # This is because the mean (resp. variance) of the sum of two normal
-                # distributed variables is the sum of the means (resp. variances).
-                # Thus, to divide by two makes the mean (resp. variance) keep
-                # stable over the mutations and the parameters stay in the range [0, 1]
-                parameters[param_i] /= 2
+        for param_i in range(self.Algorithm.parameter_count):
+            if rng.random() < self.hyper_parameters["mutation_prob"]:
+                y = 1 - parameters[param_i] if rng.random() < 0.5 else -(parameters[param_i] + 1)
+                u = rng.random()
+                mutation = (1 - u ** power) ** self.hyper_parameters["NUM_b"]
+                parameters[param_i] += y * mutation
 
         algo.parameters = parameters  # Uses the setter defined in the class Algorithm
 
-    @staticmethod
-    def log(path, population, generation):
-        mode = "a"
-        if generation == 0:
-            mode = "w"
+    def log(self, population, generation):
+        if generation % 5 != 0:
+            # Allow periodoc log without big overhead
+            return
 
-        content = " ".join((str(algo.score) for algo in population))
-        with open(path + "-scores.log.raw", mode) as file:
-            file.write(f"{generation} {content}\n")
+        scores = [algo.score for algo in population]
+        params = [algo.parameters for algo in population]
 
-        with open(path + "-params.log.raw", mode) as file:
-            if generation == 0:
-                file.write(f"{len(population)}\n")
-            for algo in population:
-                params = " ".join((str(p) for p in algo.parameters))
-                file.write(f"{params}\n")
+        self.log_data["scores"].append(scores)
+        self.log_data["params"].append(params)
+
+        np.save(self.hyper_parameters["log"], self.log_data)

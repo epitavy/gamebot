@@ -15,7 +15,7 @@ class BaseGameState(ABC):
 
     @abstractmethod
     def is_tie(self):
-        """Retutn True is the state is a tie state."""
+        """Return True if the state is a tie state."""
         pass
 
     @abstractmethod
@@ -39,7 +39,7 @@ class BaseGameState(ABC):
     @property
     @abstractmethod
     def next_player(self):
-        """Return the next player, i.e. the one that plays after `player`."""
+        """Return the next player, i.e. the one that plays after self.player."""
         pass
 
     @abstractmethod

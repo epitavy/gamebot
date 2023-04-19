@@ -8,17 +8,11 @@ class BaseGameCLI(ABC):
     but for now it fits all needs.
     """
 
-    @property
-    def engine(self):
-        """Class attribute that should be defined in sub classes and be a sub class of BaseGameEvaluator."""
-        raise NotImplemented(
-            "You should define the engine class attribute in sub classes"
-        )
-
-    @property
-    def bot(self):
-        """Class attribute that should be defined in sub classes and be a sub class of BaseAlgorithm."""
-        raise NotImplemented("You should define the bot class attribute in sub classes")
+    @classmethod
+    @abstractmethod
+    def parse_input(cls, player_input):
+        """Parse input to engine format."""
+        pass
 
     @classmethod
     @abstractmethod
@@ -35,14 +29,11 @@ class BaseGameCLI(ABC):
         """Print the given board on stdout."""
         pass
 
-    @classmethod
-    def _human_play(cls):
+    def _human_play(self):
         """Ask the user a move and plays it on the engine."""
         while True:
             try:
-                move = input(
-                    f"Move {cls.player_to_sign(cls.engine.current_player)}: "
-                ).split(" ")
+                move = input(f"Move {self.player_to_sign(self.engine.current_player)}")
             except EOFError:
                 asw = input("\rDo you want to exit the game? y/n ")
                 if asw[0].lower() == "y":
@@ -54,40 +45,35 @@ class BaseGameCLI(ABC):
                 continue
 
             try:
-                # We suppose the move is a tuple of integers
-                if not cls.engine.play(tuple((int(x) for x in move))):
+                if not self.engine.play(self.parse_input(move)):
                     print("Invalid move!")
                 else:
-                    cls.print_board(cls.engine.board)
+                    self.print_board(self.engine.board)
                     break
-            except ValueError:
-                print("You should use only numbers!")
+            except Exception:
                 continue
 
-    @classmethod
-    def _bot_play(cls):
+    def _bot_play(self):
         """Run the bot and play his move."""
         print("It is the bot turn")
-        move = cls.bot.run(cls.engine.state)
+        move = self.bot.run(self.engine.state)
 
-        if not cls.engine.algoPlay(move):
+        if not self.engine.algoPlay(move):
             print("Error: The AI generates an invalid move!")
             exit(1)
 
-        cls.print_board(cls.engine.board)
+        self.print_board(self.engine.board)
 
-    @classmethod
-    def _end(cls):
+    def _end(self):
         """Display an end message on stdout."""
         print("Finished!")
-        winner = cls.engine.get_winner()
+        winner = self.engine.get_winner()
         if winner == -1:
             print("No player win, it's a tie!")
         else:
-            print("Player", cls.player_to_sign(winner), "win")
+            print("Player", self.player_to_sign(winner), "won")
 
-    @classmethod
-    def _ask_players_kind(cls):
+    def _ask_players_kind(self):
         """Ask the user which of human or bot should the players be.
 
         Return in a tuple the function to call for player 1 and 2.
@@ -99,10 +85,10 @@ class BaseGameCLI(ABC):
                         "Should the FIRST player be a human or a bot? human/bot "
                     )
                     if asw[0].lower() == "b":
-                        player1 = cls._bot_play
+                        player1 = self._bot_play
                         break
                     elif asw[0].lower() == "h":
-                        player1 = cls._human_play
+                        player1 = self._human_play
                         break
                     else:
                         print(
@@ -113,10 +99,10 @@ class BaseGameCLI(ABC):
                         "Should the SECOND player be a human or a bot? human/bot "
                     )
                     if asw[0].lower() == "b":
-                        player2 = cls._bot_play
+                        player2 = self._bot_play
                         break
                     elif asw[0].lower() == "h":
-                        player2 = cls._human_play
+                        player2 = self._human_play
                         break
                     else:
                         print(
@@ -133,21 +119,20 @@ class BaseGameCLI(ABC):
 
             return (player1, player2)
 
-    @classmethod
-    def run_cli(cls):
+    def run_cli(self):
         """Run a game cli with the given engine and bot defined, as class attributes, until the game stops."""
 
-        p0, p1 = cls._ask_players_kind()
+        p0, p1 = self._ask_players_kind()
 
-        cls.print_board(cls.engine.board)
-        while not cls.engine.is_over():
-            if cls.engine.current_player == 0:
+        self.print_board(self.engine.board)
+        while not self.engine.is_over():
+            if self.engine.current_player == 0:
                 p0()
-            elif cls.engine.current_player == 1:
+            elif self.engine.current_player == 1:
                 p1()
             else:
-                raise NotImplemented(
+                raise NotImplementedError(
                     "Humm, the engine uses an unknowed player... Sorry"
                 )
 
-        cls._end()
+        self._end()
