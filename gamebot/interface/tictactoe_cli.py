@@ -1,7 +1,12 @@
 from colored import fg, attr
 
-from gamebot.games.tictactoe import TictactoeEngine, TictactoeMinimax
+from gamebot.ai import BaseMinimaxMLP
+from gamebot.games.tictactoe import TictactoeEngine
 from .base_game_cli import BaseGameCLI
+
+
+class TictactoeMinimaxMLP(BaseMinimaxMLP):
+    pass
 
 
 class TictactoeCLI(BaseGameCLI):
@@ -9,7 +14,7 @@ class TictactoeCLI(BaseGameCLI):
 
     def __init__(self):
         self.engine = TictactoeEngine(0)
-        self.bot = TictactoeMinimax()
+        self.bot = TictactoeMinimaxMLP((10, 5, 1), "best_params.npy")
         self.bot.max_depth = 5
 
     @classmethod

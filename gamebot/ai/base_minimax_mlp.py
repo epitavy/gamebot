@@ -17,10 +17,10 @@ class BaseMinimaxMLP(BaseMinimax, ABC):
         The MLP can be loaded from a file instead of being randomly initialized.
         """
         super().__init__()
-        if not filename:
-            self.mlp = MLP(shape)
-        else:
-            raise NotImplementedError
+        self.mlp = MLP(shape)
+        if filename:
+            params = np.load(filename)
+            self.parameters = params
 
     def state_score(self, state):
         input_state = np.array(list(state))
