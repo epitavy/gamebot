@@ -33,7 +33,8 @@ class BaseGameCLI(ABC):
         """Ask the user a move and plays it on the engine."""
         while True:
             try:
-                move = input(f"Move {self.player_to_sign(self.engine.current_player)}: ")
+                player_sign = self.player_to_sign(self.engine.current_player)
+                move = input(f"Player {player_sign}, enter your move:")
             except EOFError:
                 asw = input("\rDo you want to exit the game? y/n ")
                 if asw[0].lower() == "y":
@@ -55,7 +56,7 @@ class BaseGameCLI(ABC):
 
     def _bot_play(self):
         """Run the bot and play his move."""
-        print("It is the bot turn")
+        print(f"It is the bot turn ({self.player_to_sign(self.engine.current_player)})")
         move = self.bot.run(self.engine.state)
 
         if not self.engine.algoPlay(move):
