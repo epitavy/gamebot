@@ -37,7 +37,7 @@ class TictactoeCLI(BaseGameCLI):
     @classmethod
     def parse_input(cls, player_input):
         try:
-            row, col = map(int, player_input.split(" "))
+            row, col = map(int, player_input.split())
         except Exception:
             print("You should use only numbers and the following format: 'row col'")
             raise
