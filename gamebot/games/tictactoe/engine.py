@@ -3,13 +3,13 @@ import copy
 from gamebot.games import BaseGameState
 
 
-class TictactoeEngine():
+class TictactoeEngine:
     """The game engine for tictactoe."""
 
-    def __init__(self, player):
+    def __init__(self):
         self.board = [[-1 for _ in range(3)] for _ in range(3)]
-        self.current_player = player
-        self._state = TictactoeState(None, player, self.board)
+        self.current_player = 0
+        self._state = TictactoeState(None, self.current_player, self.board)
 
     def is_valid_move(self, x, y):
         if x < 0 or x >= 3 or y < 0 or y >= 3:
@@ -38,9 +38,6 @@ class TictactoeEngine():
         if self._state.is_tie():
             return -1
         return None
-
-    def algoPlay(self, move):
-        return self.play(move)
 
     def play(self, move):
         """Return True if the move has been played."""
@@ -135,7 +132,7 @@ class TictactoeState(BaseGameState):
         yield from (self._board[i][j] for i in range(3) for j in range(3))
 
     def __eq__(self, other):
-        return self._board == other._board and self.player == other.player
+        return np.all(self._board == other._board) and self.player == other.player
 
     def __hash__(self):
         return hash(tuple(self))

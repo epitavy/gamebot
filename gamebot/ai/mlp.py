@@ -10,7 +10,7 @@ class MLP():
     consequence, it is a regression network with one neuron in the output layer.
     """
 
-    def __init__(self, shape):
+    def __init__(self, shape, initialize=True):
         """Initialize the MLP with the given shape.
 
         The shape is an array of integers giving the number of neurons by layer.
@@ -20,9 +20,14 @@ class MLP():
 
         self.shape = shape
         self.layers = []
+
         for i in range(len(shape) - 1):
-            weights = np.random.uniform(-1, 1, (shape[i + 1], shape[i]))
-            biases = np.random.uniform(-1, 1, shape[i + 1])
+            if initialize:
+                weights = np.random.uniform(-1, 1, (shape[i + 1], shape[i]))
+                biases = np.random.uniform(-1, 1, shape[i + 1])
+            else:
+                weights = np.zeros((shape[i + 1], shape[i]))
+                biases = np.zeros(shape[i + 1])
             self.layers.append((weights, biases))
 
     def forward_propagation(self, X):

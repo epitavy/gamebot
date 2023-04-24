@@ -11,16 +11,22 @@ class BaseMinimaxMLP(BaseMinimax, ABC):
     transfered throught the parameters property.
     """
 
-    def __init__(self, shape, filename=None):
+    def __init__(self, shape, weights=None):
         """Initialize the class with an MLP of the given shape.
 
-        The MLP can be loaded from a file instead of being randomly initialized.
+        The weights of the MLP can me loaded from file, if a filepath is provided, or
+        directly loaded as in.
         """
         super().__init__()
-        self.mlp = MLP(shape)
-        if filename:
-            params = np.load(filename)
-            self.parameters = params
+        if weights is not None:
+            self.mlp = MLP(shape, initialize=False)
+            if isinstance(weights, str):
+                params = np.load(weights, allow_pickle=True)
+                self.parameters = params
+            else:
+                self.parameters = weights
+        else:
+            self.mlp = MLP(shape)
 
     def state_score(self, state):
         input_state = np.array(list(state))

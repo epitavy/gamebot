@@ -1,5 +1,6 @@
 from .engine import TictactoeEngine, TictactoeState
 from .board_evaluation import TictactoeMinimax
+from . import training, benchmark
 
 
 def run():

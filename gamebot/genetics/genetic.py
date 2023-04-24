@@ -20,7 +20,7 @@ class Genetic:
     DEFAULT_HYPER_PARAMETERS = {
         "k_opponent":  10,       # Number of opponent to fight against for evaluation
         "crossover_alpha": 0.5,  # BLX-alpha crossover param, exploration parameter
-        "NUM_b": 2,              # Non-Uniform Mutation b param, design parameter
+        "NUM_b": 2,              # Non-Uniform Mutation b param, power parameter
         "mutation_prob": 0.5,    # The probability of mutation of one parameter
         "crossover_prob": 0.25,  # The probability of crossover for one chromosome
         "log": None,             # If None, doesn't log, otherwise log to the given file
@@ -53,7 +53,7 @@ class Genetic:
 
         self.max_gen = n
         self.current_gen = 0
-        self.log_data = {"fitnesses": [], "params": []}
+        self.log_data = {"fitnesses": [], "params_of_the_best_one": []}
 
         for i in range(n):
             self.current_gen = i
@@ -189,12 +189,12 @@ class Genetic:
     def log(self, population, generation):
 
         fitnesses = [algo.fitness for algo in population]
-        params = [algo.parameters for algo in population]
+        params_best = self.bests(1)[0].parameters
 
         self.log_data["fitnesses"].append(fitnesses)
-        self.log_data["params"].append(params)
+        self.log_data["params_of_the_best_one"].append(params_best)
 
-        if generation % 5 != 0:
+        if generation != self.max_gen - 1 and generation % 5 != 0:
             # Allow periodoc log without big overhead
             return
 

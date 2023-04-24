@@ -1,17 +1,15 @@
 from gamebot.ai import BaseMinimaxMLP
 from gamebot.genetics import Genetic
-from gamebot.games.tictactoe import TictactoeEngine
+from gamebot.games.connect4 import Connect4Engine
 
 
-class TictactoeMinimaxMLP(BaseMinimaxMLP):
-    def __init__(self, shape, max_depth, weights=None):
-        super().__init__(shape, weights)
-        self.max_depth = max_depth
+class Connect4MinimaxMLP(BaseMinimaxMLP):
+    pass
 
 
-def fight_function(player1, player2, turn_normalization=True):
+def fight_function(player1, player2):
     # player1 is 0 and player2 is 1
-    engine = TictactoeEngine()
+    engine = Connect4Engine()
 
     turns = 0
 
@@ -26,11 +24,8 @@ def fight_function(player1, player2, turn_normalization=True):
             raise ValueError("This is an invalid move, it should not happen")
 
     winner = engine.get_winner()
-    if not turn_normalization:
-        turns = 1
-
     if winner == -1:
-        return 1 / 100, 1 / 100
+        return 1 / turns, 1 / turns
     elif winner == 0:
         return 2 / turns, 0
     elif winner == 1:
@@ -40,6 +35,7 @@ def fight_function(player1, player2, turn_normalization=True):
 
 
 def run():
-    genetic = Genetic(fight_function, TictactoeMinimaxMLP, (10, 5, 1), 2, log="ttt-minimax.npy")
+    genetic = Genetic(fight_function, Connect4MinimaxMLP, (43, 5, 1), log="c4-minimax.npy")
     genetic.populate(100)
     genetic.train(50)
+

@@ -13,9 +13,9 @@ class TictactoeCLI(BaseGameCLI):
     """Implements the TictactoeCLI."""
 
     def __init__(self):
-        self.engine = TictactoeEngine(0)
-        self.bot = TictactoeMinimaxMLP((10, 5, 1), "best_params.npy")
-        self.bot.max_depth = 5
+        self.engine = TictactoeEngine()
+        self.bot = TictactoeMinimaxMLP((10, 5, 1), "tictactoeMLP_weights.npy")
+        self.bot.max_depth = 2
 
     @classmethod
     def player_to_sign(cls, cell):

@@ -59,7 +59,7 @@ class BaseGameCLI(ABC):
         print(f"It is the bot turn ({self.player_to_sign(self.engine.current_player)})")
         move = self.bot.run(self.engine.state)
 
-        if not self.engine.algoPlay(move):
+        if not self.engine.play(move):
             print("Error: The AI generates an invalid move!")
             exit(1)
 
@@ -126,7 +126,6 @@ class BaseGameCLI(ABC):
 
         p0, p1 = self._ask_players_kind()
 
-        self.print_board(self.engine.board)
         while not self.engine.is_over():
             if self.engine.current_player == 0:
                 p0()
@@ -134,7 +133,7 @@ class BaseGameCLI(ABC):
                 p1()
             else:
                 raise NotImplementedError(
-                    "Humm, the engine uses an unknowed player... Sorry"
+                    "Humm, the engine uses an unknown player... Sorry"
                 )
 
         self._end()
